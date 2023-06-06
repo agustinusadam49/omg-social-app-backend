@@ -87,6 +87,9 @@ class MessagesControllers {
   }
 
   static readAllMessage(req, res, next) {
+    const userReceiverIdFromQueryParam = parseInt(req.query.userReceiverId);
+    const currentUserId = req.userDataId;
+
     Messages.findAll({
       include: {
         model: Users,
@@ -96,11 +99,31 @@ class MessagesControllers {
     })
       .then((messages) => {
         if (messages.length > 0) {
+          const allMessagesMerged = [];
+
+          const allMessagesDataFromDB = messages.map((item) => item);
+          const sentMessages = allMessagesDataFromDB.filter(
+            (message) =>
+              message.UserId === currentUserId &&
+              message.receiver_id === userReceiverIdFromQueryParam
+          );
+          const incomingMessages = allMessagesDataFromDB.filter(
+            (message) =>
+              message.receiver_id === currentUserId &&
+              message.UserId === userReceiverIdFromQueryParam
+          );
+          sentMessages.forEach((messageSent) => { allMessagesMerged.push(messageSent) });
+          incomingMessages.forEach((messageIncoming) => { allMessagesMerged.push(messageIncoming) });
+
+          const sortedMessagesByDate = allMessagesMerged.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+
           res.status(200).json({
             status: "200 Get All Messages",
             message: "Successs get all Messages",
-            messagesData: messages,
-            totalMessages: messages.length,
+            messagesData: sortedMessagesByDate,
+            totalMessages: sortedMessagesByDate.length,
             code: 200,
             success: true,
           });
