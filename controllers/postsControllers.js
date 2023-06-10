@@ -18,6 +18,7 @@ class PostsControllers {
       postLike: 0,
       postDislike: 0,
       UserId: userIdWhoHasThisPost,
+      status: req.body.status,
     };
     let newPostDataGenerate = null;
     let followerData = null;
@@ -119,6 +120,8 @@ class PostsControllers {
   }
 
   static getAllPosts(req, res, next) {
+    const currentUserLoginId = req.userDataId;
+    const currentUserFollowingIds = req.finalFollowData;
     Posts.findAll({
       include: [
         {
@@ -135,18 +138,56 @@ class PostsControllers {
     })
       .then((allPostsData) => {
         if (allPostsData.length > 0) {
-          res.status(200).json({
-            status: "200 Get All Posts",
-            message: "Successs get all posts",
-            posts: allPostsData,
-            totalPosts: allPostsData.length,
-            code: 200,
-            success: true,
-          });
+          let finalAllPostMergedData = [];
+
+          function checkRequirementFollowerOnly(followersOnly) {
+            return (
+              followersOnly.status === "FOLLOWERS_ONLY" &&
+              (followersOnly.UserId === currentUserLoginId ||
+                currentUserFollowingIds.includes(followersOnly.UserId))
+            );
+          }
+
+          const publicStatusPosts = allPostsData.filter(
+            (publicPost) => publicPost.status === "PUBLIC"
+          ) || [];
+
+          const privateStatusPosts = allPostsData.filter(
+            (post) =>
+              post.status === "PRIVATE" && post.UserId === currentUserLoginId
+          ) || [];
+
+          const followersOnlyStatusPosts = allPostsData.filter(
+            checkRequirementFollowerOnly
+          ) || [];
+
+          finalAllPostMergedData = [
+            ...publicStatusPosts,
+            ...privateStatusPosts,
+            ...followersOnlyStatusPosts,
+          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || []
+
+          if (finalAllPostMergedData.length > 0) {
+            res.status(200).json({
+              message: "Successs get all posts",
+              posts: finalAllPostMergedData,
+              totalPosts: finalAllPostMergedData.length,
+              code: 200,
+              success: true,
+            });
+          } else if (finalAllPostMergedData.length < 1) {
+            res.status(200).json({
+              message: "There are no any post",
+              posts: finalAllPostMergedData,
+              totalPosts: finalAllPostMergedData.length,
+              code: 404,
+              success: false,
+            });
+          }
         } else if (allPostsData.length < 1) {
           res.status(200).json({
-            status: "404 Not Found!",
-            message: "There are no any post haha",
+            message: "There are no any post",
+            posts: allPostsData,
             totalPosts: allPostsData.length,
             code: 404,
             success: false,
@@ -195,6 +236,7 @@ class PostsControllers {
       postLike: req.body.postLike,
       postDislike: req.body.postDislike,
       UserId: userIdWhoHasThisPost,
+      status: req.body.status,
     };
     Posts.update(postReadyToUpdate, { where: { id: postId } })
       .then((updatedPostResult) => {
