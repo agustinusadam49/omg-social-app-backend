@@ -46,6 +46,18 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      status: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: {
+            msg: "Status cannot be empty!",
+          },
+          isIn: {
+            args: [["PUBLIC", "PRIVATE", "FOLLOWERS_ONLY"]],
+            msg: "Status must be 'PUBLIC', 'PRIVE', or 'FOLLOWERS_ONLY'!"
+          }
+        },
+      }
     },
     { sequelize }
   );
