@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-server": "set NODE_ENV=development&&nodemon app.js",
     "stg-server": "set NODE_ENV=staging&&nodemon app.js",
-    "prod-server": "set NODE_ENV=production&&nodemon app.js"
+    "prod-server": "set NODE_ENV=production&&nodemon app.js",
+    "start": "set NODE_ENV=development&&nodemon app.js"
   },
   "keywords": [],
   "author": "",
