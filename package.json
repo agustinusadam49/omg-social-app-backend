@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set NODE_ENV=development&&node app.js",
     "dev-server": "set NODE_ENV=development&&nodemon app.js",
     "stg-server": "set NODE_ENV=staging&&nodemon app.js",
     "prod-server": "set NODE_ENV=production&&nodemon app.js",
-    "start": "set NODE_ENV=development&&nodemon app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
