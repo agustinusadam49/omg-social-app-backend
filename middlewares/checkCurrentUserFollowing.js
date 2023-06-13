@@ -33,5 +33,3 @@ function checkCurrentUserFollowing(req, res, next) {
 module.exports = {
   checkCurrentUserFollowing,
 };
-
-// The ttrigger
