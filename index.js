@@ -1,18 +1,15 @@
 // SERVER FOR OMONGIN APP
-require("dotenv").config();
-console.log(`Berjalan pada environment: ${process.env.NODE_ENV}`);
+if (process.env.NODE_ENV == 'development') {
+  require("dotenv").config();
+  console.log(`Berjalan pada environment: ${process.env.NODE_ENV}`);
+}
 
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const cors = require("cors");
 const path = require("path");
-const PORT =
-  process.env.NODE_ENV === "production"
-    ? process.env.PROD_PORT
-    : process.env.NODE_ENV === "staging"
-    ? process.env.STG_PORT
-    : process.env.DEV_PORT;
+const PORT = process.env.PORT || process.env.DEV_PORT;
 const indexRouter = require("./routes/index.js");
 const errorHandlers = require("./middlewares/errorHandlers");
 
