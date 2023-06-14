@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "set NODE_ENV=development&&node index.js",
-    "dev-server": "set NODE_ENV=development&&nodemon index.js",
-    "stg-server": "set NODE_ENV=staging&&nodemon index.js",
-    "prod-server": "set NODE_ENV=production&&nodemon index.js",
+    "start": "node index.js",
+    "dev": "set NODE_ENV=development&&nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -30,6 +28,6 @@
     "sequelize-cli": "^6.5.2"
   },
   "devDependencies": {
-    "dotenv": "^10.0.0"
+    "dotenv": "^16.1.4"
   }
 }
