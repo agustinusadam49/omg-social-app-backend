@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "node index.js",
+    "build": "set NODE_ENV=production&&set PORT=5101&&node index.js",
     "dev": "set NODE_ENV=development&&nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
