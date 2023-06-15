@@ -12,12 +12,28 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
+  if (env != "development") {
+    const notDevelConfig = {
+      username: "postgres",
+      password: "bkz83UvylEKxksla7tgV",
+      database: "railway",
+      host: "containers-us-west-103.railway.app",
+      dialect: "postgres",
+    };
+    sequelize = new Sequelize(
+      notDevelConfig.database,
+      notDevelConfig.username,
+      notDevelConfig.password,
+      notDevelConfig
+    );
+  } else {
+    sequelize = new Sequelize(
+      config.database,
+      config.username,
+      config.password,
+      config
+    );
+  }
 }
 
 fs.readdirSync(__dirname)
