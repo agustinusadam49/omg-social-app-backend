@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "set NODE_ENV=production&&set PORT=5102&&node index.js",
     "dev": "set NODE_ENV=development&&nodemon index.js",
     "stg": "set NODE_ENV=staging&&set PORT=5101&&nodemon index.js",
     "prod": "set NODE_ENV=production&&set PORT=5102&&nodemon index.js",
