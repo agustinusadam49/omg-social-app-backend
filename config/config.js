@@ -24,6 +24,7 @@ module.exports = {
     password: ENVIRONMENT_VARIABLES.railwayPgPassword,
     database: ENVIRONMENT_VARIABLES.railwayPgDatabase,
     host: ENVIRONMENT_VARIABLES.railwayPgHost,
+    port: ENVIRONMENT_VARIABLES.railwayPgPort,
     dialect: ENVIRONMENT_VARIABLES.pgDialect,
   },
   // Local Devel
