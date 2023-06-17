@@ -11,6 +11,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 // const path = require("path");
+console.log(`process.env.NODE_ENV: ${process.env.NODE_ENV}`)
+
+console.log(`process.env.PORT: ${process.env.PORT}`)
+console.log(`process.env.DEV_PORT: ${process.env.DEV_PORT}`)
 const PORT = process.env.PORT || process.env.DEV_PORT;
 const indexRouter = require("./routes/index.js");
 const errorHandlers = require("./middlewares/errorHandlers");
