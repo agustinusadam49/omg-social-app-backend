@@ -15,6 +15,8 @@ const ENVIRONMENT_VARIABLES = {
   pgDialect: process.env.PG_DIALECT,
 };
 
+console.log(ENVIRONMENT_VARIABLES)
+
 module.exports = {
   // Railway Devel
   development:{
