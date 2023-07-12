@@ -5,6 +5,8 @@ const authentication = require("../../middlewares/authentication");
 
 router.post("/register", UserControllers.registerUser);
 router.post("/login", UserControllers.userLogin);
+router.get("/get-by-email", UserControllers.getUserByEmail);
+router.put("/:email/update-password", UserControllers.updateUserPasswordByEmail);
 router.get("/get-current-user", authentication, UserControllers.getCurrentUserLogin);
 router.get("/admin", UserControllers.getAllUsersOfOmonginAppForAdmin);
 router.put("/send-email-verification/:id", UserControllers.sendEmailVerification);

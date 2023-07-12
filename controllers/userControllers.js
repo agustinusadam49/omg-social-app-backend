@@ -263,7 +263,7 @@ class UserControllers {
       })
       .then((profiles) => {
         if (profiles) {
-          const followerResponse = profiles.Follows
+          const followerResponse = profiles.Follows;
 
           const followerMapped = followerResponse.map((follower) => ({
             id: follower.id,
@@ -386,7 +386,10 @@ class UserControllers {
       include: [
         {
           model: Profiles,
-          include: { model: Follows, include: { model: Users, include: {model: Profiles} } },
+          include: {
+            model: Follows,
+            include: { model: Users, include: { model: Profiles } },
+          },
         },
         {
           model: Follows,
@@ -493,6 +496,86 @@ class UserControllers {
             status: "404 Cannot find any users!",
             message: `Tidak ada hasil search dari keyword: ${searchTerms}!`,
             code: 404,
+          };
+        }
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+
+  static getUserByEmail(req, res, next) {
+    const userEmail = req.query.userEmail;
+    Users.findOne({ where: { userEmail: userEmail } })
+      .then((userByEmail) => {
+        if (userByEmail) {
+          if (userByEmail.userOnlineStatus === true) {
+            throw {
+              message: "You have been logged, plese logout first!",
+              code: 400,
+              success: false,
+            };
+          } else if (userByEmail.userOnlineStatus === false) {
+            res.status(200).json({
+              message: `Success get user data with email ${userEmail}`,
+              data: userByEmail,
+              code: 200,
+              success: true,
+            });
+          }
+        } else if (!userByEmail) {
+          throw {
+            message: "Maaf email yang anda masukan salah!",
+            code: 404,
+            success: false,
+          };
+        }
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+
+  static updateUserPasswordByEmail(req, res, next) {
+    const userEmail = req.params.email;
+    const newReqUserPassword = req.body.userPassword;
+
+    Users.findOne({ where: { userEmail: userEmail } })
+      .then((userByEmail) => {
+        if (userByEmail) {
+          if (userByEmail.userOnlineStatus === true) {
+            throw {
+              message: "You have been logged, plese logout first!",
+              code: 400,
+              success: false,
+            };
+          } else if (userByEmail.userOnlineStatus === false) {
+            const payload = {
+              userPassword: generatePassword(newReqUserPassword),
+            };
+
+            return Users.update(payload, { where: { userEmail: userEmail } });
+          }
+        } else if (!userByEmail) {
+          throw {
+            message: "Maaf email yang anda masukan salah!",
+            code: 404,
+            success: false,
+          };
+        }
+      })
+      .then((updatedUser) => {
+        if (updatedUser == 1) {
+          res.status(201).json({
+            message: `Success update user password with email ${userEmail}`,
+            code: 201,
+            success: true,
+          });
+        } else {
+          throw {
+            message: `Maaf data user dengan email: ${userEmail} tidak dapat ditemukan!`,
+            code: 404,
+            success: false,
           };
         }
       })
