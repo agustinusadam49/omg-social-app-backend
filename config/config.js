@@ -19,22 +19,22 @@ console.log(ENVIRONMENT_VARIABLES)
 
 module.exports = {
   // Railway Devel
-  development:{
-    username: ENVIRONMENT_VARIABLES.railwayPgUser,
-    password: ENVIRONMENT_VARIABLES.railwayPgPassword,
-    database: ENVIRONMENT_VARIABLES.railwayPgDatabase,
-    host: ENVIRONMENT_VARIABLES.railwayPgHost,
-    port: ENVIRONMENT_VARIABLES.railwayPgPort,
-    dialect: ENVIRONMENT_VARIABLES.pgDialect,
-  },
-  // Local Devel
   // development:{
-  //   username: ENVIRONMENT_VARIABLES.pgUserName,
-  //   password: ENVIRONMENT_VARIABLES.pgPassword,
-  //   database: ENVIRONMENT_VARIABLES.pgDatabase,
-  //   host: ENVIRONMENT_VARIABLES.pgHost,
+  //   username: ENVIRONMENT_VARIABLES.railwayPgUser,
+  //   password: ENVIRONMENT_VARIABLES.railwayPgPassword,
+  //   database: ENVIRONMENT_VARIABLES.railwayPgDatabase,
+  //   host: ENVIRONMENT_VARIABLES.railwayPgHost,
+  //   port: ENVIRONMENT_VARIABLES.railwayPgPort,
   //   dialect: ENVIRONMENT_VARIABLES.pgDialect,
   // },
+  // Local Devel
+  development:{
+    username: ENVIRONMENT_VARIABLES.pgUserName,
+    password: ENVIRONMENT_VARIABLES.pgPassword,
+    database: ENVIRONMENT_VARIABLES.pgDatabase,
+    host: ENVIRONMENT_VARIABLES.pgHost,
+    dialect: ENVIRONMENT_VARIABLES.pgDialect,
+  },
   staging: {
     username: "postgres",
     password: "admin",

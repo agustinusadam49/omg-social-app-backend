@@ -237,6 +237,7 @@ class UserControllers {
   static getCurrentUserLogin(req, res, next) {
     const currentUserId = req.userDataId;
     let currentUserData = [];
+    let currentProfiles = null;
     Users.findByPk(currentUserId, {
       include: [
         { model: Posts, include: { model: Likes } },
@@ -263,7 +264,24 @@ class UserControllers {
       })
       .then((profiles) => {
         if (profiles) {
-          const followerResponse = profiles.Follows;
+          currentProfiles = profiles;
+          return Users.findAll({
+            include: [{ model: Profiles }, { model: Messages }],
+            order: [["id", "DESC"]],
+          });
+        } else if (!profiles) {
+          throw {
+            status: "400 Bad Requests!",
+            message: "Maaf gagal untuk mengambil data profile",
+            code: 404,
+            success: false,
+          };
+        }
+      })
+      .then((userDataOmonginApp) => {
+        if (userDataOmonginApp.length > 0) {
+          const allUsersData = userDataOmonginApp;
+          const followerResponse = currentProfiles.Follows;
 
           const followerMapped = followerResponse.map((follower) => ({
             id: follower.id,
@@ -272,6 +290,17 @@ class UserControllers {
             createdAt: follower.createdAt,
             updatedAt: follower.updatedAt,
           }));
+
+          const findUserByFollowerUserId = (userData) => {
+            const isThereUserFollower = !!followerMapped.find(
+              (user) => user.UserId === userData.id
+            );
+            return isThereUserFollower ? userData : null;
+          };
+
+          const theRealFollowerData = allUsersData.filter((user) =>
+            findUserByFollowerUserId(user)
+          );
 
           const userDataMapped = currentUserData.map((item) => {
             return {
@@ -284,9 +313,9 @@ class UserControllers {
               createdAt: item.createdAt,
               updatedAt: item.updatedAt,
               posts: item.Posts,
-              profile: profiles,
+              profile: currentProfiles,
               following: item.Follows,
-              followers: followerMapped,
+              followers: theRealFollowerData,
             };
           });
 
@@ -307,10 +336,10 @@ class UserControllers {
             code: 200,
             success: true,
           });
-        } else if (!profiles) {
+        } else if (userDataOmonginApp.length < 1) {
           throw {
-            status: "400 Bad Requests!",
-            message: "Maaf gagal untuk mengambil data profile",
+            status: "404 Cannot find any users!",
+            message: "Belum ada user sama sekali!",
             code: 404,
             success: false,
           };
