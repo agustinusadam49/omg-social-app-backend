@@ -302,7 +302,22 @@ class UserControllers {
             findUserByFollowerUserId(user)
           );
 
+          const getFollowingAccount = (followData) => {
+            const findUserByProfileId = (userData) => {
+              const isTherUserFollowing = !!followData.find(
+                (userItem) => userItem.ProfileId === userData.id
+              );
+              return isTherUserFollowing ? userData : null;
+            };
+            const followingDataReal = allUsersData.filter((user) => {
+              return findUserByProfileId(user);
+            });
+            return followingDataReal;
+          };
+
           const userDataMapped = currentUserData.map((item) => {
+            const theRealFollowingData = getFollowingAccount(item.Follows);
+
             return {
               id: item.id,
               userFullname: item.userFullname,
@@ -314,7 +329,7 @@ class UserControllers {
               updatedAt: item.updatedAt,
               posts: item.Posts,
               profile: currentProfiles,
-              following: item.Follows,
+              following: theRealFollowingData,
               followers: theRealFollowerData,
             };
           });
