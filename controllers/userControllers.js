@@ -426,6 +426,8 @@ class UserControllers {
 
   static getUserById(req, res, next) {
     const userId = req.params.id;
+    let currentUserById = null;
+
     Users.findByPk(userId, {
       include: [
         {
@@ -443,18 +445,48 @@ class UserControllers {
     })
       .then((userDataById) => {
         if (userDataById) {
-          res.status(200).json({
-            status: "200 Ok!",
-            message: `Data user dengan id: ${userId}!`,
-            userByIdData: userDataById,
-            userByIdFollower: userDataById.Profile.Follows,
-            userByIdFollowing: userDataById.Follows,
+          currentUserById = userDataById;
+          return Users.findAll({
+            include: [{ model: Profiles }, { model: Messages }],
+            order: [["id", "DESC"]],
           });
         } else if (!userDataById) {
           throw {
             status: "404 User is not found!",
             message: `Maaf tidak dapat menemukan data user dengan ID: ${userId}.`,
             code: 404,
+          };
+        }
+      })
+      .then((userDataOmonginApp) => {
+        if (userDataOmonginApp.length > 0) {
+          const allUsersData = userDataOmonginApp;
+          const followingUser = currentUserById.Follows;
+
+          const findUserByProfileId = (userData) => {
+            const isTherUserFollowing = !!followingUser.find(
+              (userItem) => userItem.ProfileId === userData.id
+            );
+            return isTherUserFollowing ? userData : null;
+          };
+
+          const followingDataReal = allUsersData.filter((user) => {
+            return findUserByProfileId(user);
+          });
+
+          res.status(200).json({
+            status: "200 Ok!",
+            message: `Data user dengan id: ${userId}!`,
+            userByIdData: currentUserById,
+            userByIdFollower: currentUserById.Profile.Follows,
+            userByIdFollowing: followingDataReal,
+          });
+        } else if (userDataOmonginApp.length < 1) {
+          throw {
+            status: "404 Cannot find any users!",
+            message: "Belum ada user sama sekali!",
+            code: 404,
+            success: false,
           };
         }
       })
