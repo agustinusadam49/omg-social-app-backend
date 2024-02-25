@@ -122,6 +122,8 @@ class PostsControllers {
   static getAllPosts(req, res, next) {
     const currentUserLoginId = req.userDataId;
     const currentUserFollowingIds = req.finalFollowData;
+    const currentSize = req.query.size;
+
     Posts.findAll({
       include: [
         {
@@ -148,30 +150,43 @@ class PostsControllers {
             );
           }
 
-          const publicStatusPosts = allPostsData.filter(
-            (publicPost) => publicPost.status === "PUBLIC"
-          ) || [];
+          const publicStatusPosts =
+            allPostsData.filter(
+              (publicPost) => publicPost.status === "PUBLIC"
+            ) || [];
 
-          const privateStatusPosts = allPostsData.filter(
-            (post) =>
-              post.status === "PRIVATE" && post.UserId === currentUserLoginId
-          ) || [];
+          const privateStatusPosts =
+            allPostsData.filter(
+              (post) =>
+                post.status === "PRIVATE" && post.UserId === currentUserLoginId
+            ) || [];
 
-          const followersOnlyStatusPosts = allPostsData.filter(
-            checkRequirementFollowerOnly
-          ) || [];
+          const followersOnlyStatusPosts =
+            allPostsData.filter(checkRequirementFollowerOnly) || [];
 
-          finalAllPostMergedData = [
-            ...publicStatusPosts,
-            ...privateStatusPosts,
-            ...followersOnlyStatusPosts,
-          ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || []
+          finalAllPostMergedData =
+            [
+              ...publicStatusPosts,
+              ...privateStatusPosts,
+              ...followersOnlyStatusPosts,
+            ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) ||
+            [];
+
+          const currentTotalPosts = finalAllPostMergedData.length;
+
+          const finalPostsSliced =
+            typeof currentSize !== undefined && currentSize >= currentTotalPosts
+              ? finalAllPostMergedData
+              : typeof currentSize !== undefined &&
+                currentSize < currentTotalPosts
+              ? finalAllPostMergedData.splice(0, currentSize)
+              : finalAllPostMergedData;
 
           if (finalAllPostMergedData.length > 0) {
             res.status(200).json({
               message: "Successs get all posts",
-              posts: finalAllPostMergedData,
-              totalPosts: finalAllPostMergedData.length,
+              posts: finalPostsSliced,
+              totalPosts: currentTotalPosts,
               code: 200,
               success: true,
             });
