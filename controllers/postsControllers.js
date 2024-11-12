@@ -19,6 +19,7 @@ class PostsControllers {
       postDislike: 0,
       UserId: userIdWhoHasThisPost,
       status: req.body.status,
+      postStatus: req.body.postStatus,
     };
     let newPostDataGenerate = null;
     let followerData = null;

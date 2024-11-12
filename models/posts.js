@@ -54,10 +54,22 @@ module.exports = (sequelize, DataTypes) => {
           },
           isIn: {
             args: [["PUBLIC", "PRIVATE", "FOLLOWERS_ONLY"]],
-            msg: "Status must be 'PUBLIC', 'PRIVE', or 'FOLLOWERS_ONLY'!"
-          }
+            msg: "Status must be 'PUBLIC', 'PRIVATE', or 'FOLLOWERS_ONLY'!",
+          },
         },
-      }
+      },
+      postStatus: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: {
+            msg: "Post Status cannot be empty!",
+          },
+          isIn: {
+            args: [["ORIGINAL_POST", "REPOST", "REPOST_QUOTE"]],
+            msg: "Post status must be 'ORIGINAL_POST', 'REPOST', or 'REPOST_QUOTE'!",
+          },
+        },
+      },
     },
     { sequelize }
   );

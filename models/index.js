@@ -5,10 +5,10 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-console.log(`env pada index models: ${env}`)
-// const config = require(__dirname + "/../config/config.json")[env];
-const config = require(__dirname + "/../config/config.js")[env];
+const config = require(__dirname + "/../config/config.json")[env];
 const db = {};
+
+console.log(`env pada index models: ${env}`)
 
 let sequelize;
 if (config.use_env_variable) {
