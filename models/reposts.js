@@ -41,12 +41,11 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-    {
-      sequelize,
-    }
+    { sequelize }
   );
 
   RePosts.associate = function (models) {
+    // associations can be defined here
     RePosts.belongsTo(models.Posts);
     RePosts.belongsTo(models.Users);
   };

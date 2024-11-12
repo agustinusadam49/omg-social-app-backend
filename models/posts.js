@@ -82,13 +82,19 @@ module.exports = (sequelize, DataTypes) => {
     { sequelize }
   );
 
+  Posts.beforeCreate((posts, options) => {
+    posts.postLike = 0;
+    posts.postDislike = 0;
+    posts.repostCounter = 0;
+  });
+
   Posts.associate = function (models) {
     // associations can be defined here
     Posts.belongsTo(models.Users);
     Posts.hasMany(models.Likes);
     Posts.hasMany(models.Comments);
     Posts.hasMany(models.ReplyComments);
-    Posts.hasMany(models.RePosts)
+    Posts.hasOne(models.RePosts);
   };
   return Posts;
 };

@@ -6,7 +6,15 @@ const {
   Notifications,
   NotifContents,
   Follows,
+  RePosts,
 } = require("../models");
+const {
+  modifyObjectArr,
+  getPublicPostStatus,
+  getPrivatePostStatus,
+  getFollowersOnlyPostStatus,
+  getFinalPostData,
+} = require("./utils/postsControllerUtils");
 const { Op } = require("sequelize");
 
 class PostsControllers {
@@ -15,8 +23,6 @@ class PostsControllers {
     const newPostObjReadyToCreate = {
       postCaption: req.body.postCaption,
       postImageUrl: req.body.postImageUrl ? req.body.postImageUrl : null,
-      postLike: 0,
-      postDislike: 0,
       UserId: userIdWhoHasThisPost,
       status: req.body.status,
       postStatus: req.body.postStatus,
@@ -136,6 +142,7 @@ class PostsControllers {
           include: { model: Users },
           order: [["id", "DESC"]],
         },
+        { model: RePosts },
       ],
       order: [["id", "DESC"]],
     })
@@ -143,45 +150,32 @@ class PostsControllers {
         if (allPostsData.length > 0) {
           let finalAllPostMergedData = [];
 
-          function checkRequirementFollowerOnly(followersOnly) {
-            return (
-              followersOnly.status === "FOLLOWERS_ONLY" &&
-              (followersOnly.UserId === currentUserLoginId ||
-                currentUserFollowingIds.includes(followersOnly.UserId))
-            );
-          }
+          const publicStatusPosts = getPublicPostStatus(allPostsData);
 
-          const publicStatusPosts =
-            allPostsData.filter(
-              (publicPost) => publicPost.status === "PUBLIC"
-            ) || [];
+          const privateStatusPosts = getPrivatePostStatus(
+            allPostsData,
+            currentUserLoginId
+          );
 
-          const privateStatusPosts =
-            allPostsData.filter(
-              (post) =>
-                post.status === "PRIVATE" && post.UserId === currentUserLoginId
-            ) || [];
+          const followersOnlyStatusPosts = getFollowersOnlyPostStatus(
+            allPostsData,
+            currentUserLoginId,
+            currentUserFollowingIds
+          );
 
-          const followersOnlyStatusPosts =
-            allPostsData.filter(checkRequirementFollowerOnly) || [];
-
-          finalAllPostMergedData =
-            [
-              ...publicStatusPosts,
-              ...privateStatusPosts,
-              ...followersOnlyStatusPosts,
-            ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) ||
-            [];
+          finalAllPostMergedData = modifyObjectArr([
+            ...publicStatusPosts,
+            ...privateStatusPosts,
+            ...followersOnlyStatusPosts,
+          ]);
 
           const currentTotalPosts = finalAllPostMergedData.length;
 
-          const finalPostsSliced =
-            typeof currentSize !== undefined && currentSize >= currentTotalPosts
-              ? finalAllPostMergedData
-              : typeof currentSize !== undefined &&
-                currentSize < currentTotalPosts
-              ? finalAllPostMergedData.splice(0, currentSize)
-              : finalAllPostMergedData;
+          const finalPostsSliced = getFinalPostData(
+            finalAllPostMergedData,
+            currentSize,
+            currentTotalPosts
+          );
 
           if (finalAllPostMergedData.length > 0) {
             res.status(200).json({
