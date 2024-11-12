@@ -2,7 +2,9 @@
 module.exports = (sequelize, DataTypes) => {
   const Sequelize = sequelize.Sequelize;
   const Model = Sequelize.Model;
+
   class Follows extends Model {}
+
   Follows.init({
     ProfileId: {
       type: DataTypes.INTEGER,
@@ -29,10 +31,12 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   }, { sequelize });
+
   Follows.associate = function(models) {
     // associations can be defined here
     Follows.belongsTo(models.Users);
     Follows.belongsTo(models.Profiles);
   };
+
   return Follows;
 };

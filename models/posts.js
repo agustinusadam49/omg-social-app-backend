@@ -70,6 +70,14 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      repostCounter: {
+        type: DataTypes.INTEGER,
+        validate: {
+          isInt: {
+            msg: "repostCounter must be an integer or a number",
+          },
+        },
+      },
     },
     { sequelize }
   );
@@ -80,6 +88,7 @@ module.exports = (sequelize, DataTypes) => {
     Posts.hasMany(models.Likes);
     Posts.hasMany(models.Comments);
     Posts.hasMany(models.ReplyComments);
+    Posts.hasMany(models.RePosts)
   };
   return Posts;
 };
