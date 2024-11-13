@@ -1,7 +1,7 @@
 const { RePosts } = require("../models");
 
 class RepostController {
-  static createNewRepost(req, res, next) {
+  static createRepost(req, res, next) {
     const currentUserId = req.userDataId;
 
     const { PostId, sourcePostId } = req.body;

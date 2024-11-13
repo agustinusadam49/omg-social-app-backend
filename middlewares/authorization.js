@@ -1,7 +1,8 @@
-const { Posts, Likes, Comments, Messages } = require("../models");
+const { Posts, Likes, Comments, Messages, RePosts } = require("../models");
 
 function authorizationPost(req, res, next) {
   const postId = req.params.id;
+
   Posts.findByPk(postId)
     .then((postDataById) => {
       if (postDataById) {
@@ -31,6 +32,7 @@ function authorizationPost(req, res, next) {
 
 function authorizationLikes(req, res, next) {
   const likeId = req.params.id;
+
   Likes.findByPk(likeId)
     .then((likeDataById) => {
       if (likeDataById) {
@@ -58,6 +60,7 @@ function authorizationLikes(req, res, next) {
 
 function authorizationComments(req, res, next) {
   const commentId = req.params.id;
+
   Comments.findByPk(commentId)
     .then((commentDataById) => {
       if (commentDataById) {
@@ -87,6 +90,7 @@ function authorizationComments(req, res, next) {
 
 function authorizationMessages(req, res, next) {
   const messageId = req.params.id;
+
   Messages.findByPk(messageId)
     .then((messageByIdData) => {
       if (messageByIdData) {
@@ -103,7 +107,37 @@ function authorizationMessages(req, res, next) {
       } else if (!messageByIdData) {
         throw {
           status: "404 Not found!",
-          message: `Maaf data message dengan id${messageId} tidak dapat ditemukan di DB!`,
+          message: `Maaf data message dengan id:${messageId} tidak dapat ditemukan di DB!`,
+          code: 404,
+          success: false,
+        };
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+function authorizationReposts(req, res, next) {
+  const repostId = req.params.id;
+
+  RePosts.findByPk(repostId)
+    .then((repostById) => {
+      if (repostById) {
+        if (repostById.UserId === req.userDataId) {
+          next();
+        } else {
+          throw {
+            status: "401 Unauthorized!",
+            message: `Maaf data repost dengan id: ${repostId} bukanlah milik Anda!`,
+            code: 401,
+            success: false,
+          };
+        }
+      } else if (!repostById) {
+        throw {
+          status: "404 Not found!",
+          message: `Maaf data repost dengan id: (${repostId}) tidak dapat ditemukan di DB!`,
           code: 404,
           success: false,
         };
@@ -119,4 +153,5 @@ module.exports = {
   authorizationLikes,
   authorizationComments,
   authorizationMessages,
+  authorizationReposts,
 };
