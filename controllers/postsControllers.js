@@ -164,14 +164,6 @@ class PostsControllers {
       })
       .then((newRepostResponse) => {
         if (newRepostResponse) {
-          res.status(201).json({
-            status: "201 Success create new posts",
-            message: `Success Create New Reposts belongs to user with id: ${userIdWhoHasThisPost}`,
-            newPost: newPostDataGenerate,
-            code: 201,
-            success: true,
-          });
-
           return Posts.findByPk(sourcePostId);
         } else if (!newRepostResponse) {
           throw {
@@ -201,9 +193,11 @@ class PostsControllers {
       .then((postUpdateResultResponse) => {
         if (postUpdateResultResponse == 1) {
           res.status(201).json({
-            status: "201 Success update repost data!",
-            message: `Berhasil edit data repost dengan ID: ${sourcePostId}!`,
+            status: "201 Success create new posts",
+            message: `Success Create New Reposts belongs to user with id: ${userIdWhoHasThisPost}`,
+            newPost: newPostDataGenerate,
             code: 201,
+            success: true,
           });
 
           return Follows.findAll({
@@ -213,7 +207,7 @@ class PostsControllers {
             ],
             order: [["id", "DESC"]],
           });
-        } else {
+        } else if (!postUpdateResultResponse == 0) {
           throw {
             status: "404 Not Found!",
             message: `Maaf data repost dengan ID: ${sourcePostId} tidak dapat ditemukan!`,
@@ -222,10 +216,10 @@ class PostsControllers {
         }
       })
       .then((followsData) => {
-        console.log("followsData followsData followsData followsData:", followsData)
         followerData = followsData.filter(
           (item) => item.Profile.UserId === userIdWhoHasThisPost
         );
+
         if (followerData.length > 0) {
           for (let i = 0; i < followerData.length; i++) {
             const newNotifObj = {
