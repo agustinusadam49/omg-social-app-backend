@@ -11,6 +11,7 @@ const message_router = require("./route-compilations/messageRouter");
 const follow_router = require("./route-compilations/followRouter");
 const notifications_router = require("./route-compilations/notificationsRouter");
 const notif_contents_router = require("./route-compilations/notifContentsRouter");
+// const reposts_router = require("./route-compilations/repostsRouter");
 
 router.use("/", landing_router);
 router.use("/users", user_router);
@@ -23,5 +24,6 @@ router.use("/messages", message_router);
 router.use("/follows", follow_router);
 router.use("/notifications", notifications_router);
 router.use("/notif-contents", notif_contents_router);
+// router.use("/reposts", reposts_router);
 
 module.exports = router;
